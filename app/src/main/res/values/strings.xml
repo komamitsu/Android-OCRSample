@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">OCR Sample</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="take_a_photo">Take a photo</string>
+</resources>
