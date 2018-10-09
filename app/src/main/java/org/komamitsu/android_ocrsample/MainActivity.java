@@ -1,14 +1,19 @@
 package org.komamitsu.android_ocrsample;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,6 +36,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 0;
     private static final int REQUEST_CAMERA = 1;
+    private static final int MY_PERMISSIONS_REQUESTS = 0;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -38,9 +44,50 @@ public class MainActivity extends AppCompatActivity {
     private TextView detectedTextView;
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUESTS: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    // FIXME: Handle this case the user denied to grant the permissions
+                }
+                break;
+            }
+            default:
+                // TODO: Take care of this case later
+                break;
+        }
+    }
+
+    private void requestPermissions()
+    {
+        List<String> requiredPermissions = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requiredPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            requiredPermissions.add(Manifest.permission.CAMERA);
+        }
+
+        if (!requiredPermissions.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    requiredPermissions.toArray(new String[]{}),
+                    MY_PERMISSIONS_REQUESTS);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        requestPermissions();
 
         findViewById(R.id.choose_from_gallery).setOnClickListener(new View.OnClickListener() {
             @Override
